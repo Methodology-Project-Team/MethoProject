@@ -1,5 +1,3 @@
-// src/pages/PropertyView.jsx
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getPropertyById, addToFavorites, scheduleVisit, hasUserSession, getPropertyReviews, createReview, resolveMediaUrl } from '../services/api';
@@ -226,9 +224,9 @@ const PropertyView = () => {
                 )}
 
                 <div className="card-actions flex flex-col gap-3 mt-6">
-                  {/* <button className="btn btn-primary btn-lg w-full" onClick={handleScheduleVisit}>
+                  <button className="btn btn-primary btn-lg w-full" onClick={handleScheduleVisit}>
                     📅 Schedule Visit
-                  </button> */}
+                  </button>
                   <button className="btn btn-outline btn-lg w-full" onClick={handleFavoriteToggle}>
                     ❤️ Add to Favorites
                   </button>
@@ -251,53 +249,6 @@ const PropertyView = () => {
             </div>
           </div>
 
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default PropertyView;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-############################################################################################################
-
-
-
-
-
-return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="mb-6 text-purple-600 font-semibold hover:underline"
-        >
-          ← Back to Properties
-        </button>
-
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Property Details Page</h1>
-          <p className="text-gray-500">Currently viewing property ID: <span className="text-purple-600 font-mono">{id}</span></p>
-          
-          <div className="mt-10 py-20 border-2 border-dashed border-gray-100 rounded-xl">
-            <p className="text-gray-400 italic">The details UI, Images, and Booking actions will be built here for Task 2.</p>
-          </div>
         </div>
       </div>
     </div>
