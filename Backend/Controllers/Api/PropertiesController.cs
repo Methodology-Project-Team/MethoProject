@@ -30,15 +30,10 @@ public class PropertiesController : ControllerBase
         [FromQuery] decimal? minPrice,
         [FromQuery] decimal? maxPrice,
         [FromQuery] string? propertyType)
-    {
-
-
+{
 
     
-#####################################################
-
-
-
+        //   ########## ! Here
 
 
         var properties = await query
