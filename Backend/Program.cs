@@ -181,7 +181,15 @@ builder.Services.AddAuthentication(options =>
 // Authorization policies
 
 
-//#########################  ! Here   ######################################
+builder.Services.AddAuthorizationBuilder()
+
+    .AddPolicy("AdminOnly", p => p.RequireRole("Admin"))
+
+    .AddPolicy("LandlordOnly", p => p.RequireRole("Landlord"))
+
+    .AddPolicy("TenantOnly", p => p.RequireRole("Tenant"))
+
+    .AddPolicy("LandlordOrAdmin", p => p.RequireRole("Admin", "Landlord"));
 
 
 // SignalR
