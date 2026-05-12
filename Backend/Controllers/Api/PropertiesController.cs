@@ -31,15 +31,27 @@ public class PropertiesController : ControllerBase
         [FromQuery] decimal? maxPrice,
         [FromQuery] string? propertyType)
     {
+        var query = _db.Properties
+            .Where(p => p.ApprovalStatus == ApprovalStatus.Approved
+                        && p.RentalStatus == RentalStatus.Available)
+            .Include(p => p.Landlord)
+            .Include(p => p.Images)
+            .AsQueryable();
 
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(p => p.Title.Contains(search) || p.Description!.Contains(search));
 
+        if (!string.IsNullOrWhiteSpace(location))
+            query = query.Where(p => p.Location.Contains(location));
 
-    
-#####################################################
+        if (minPrice.HasValue)
+            query = query.Where(p => p.Price >= minPrice.Value);
 
+        if (maxPrice.HasValue)
+            query = query.Where(p => p.Price <= maxPrice.Value);
 
-
-
+        if (!string.IsNullOrWhiteSpace(propertyType) && Enum.TryParse<PropertyType>(propertyType, true, out var pt))
+            query = query.Where(p => p.PropertyType == pt);
 
         var properties = await query
             .OrderByDescending(p => p.CreatedAt)
@@ -56,7 +68,6 @@ public class PropertiesController : ControllerBase
         var property = await _db.Properties
             .Include(p => p.Landlord)
             .Include(p => p.Images)
-            .Include(p => p.Reviews)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (property is null) return NotFound();
@@ -73,7 +84,6 @@ public class PropertiesController : ControllerBase
             .Where(p => p.LandlordId == userId)
             .Include(p => p.Landlord)
             .Include(p => p.Images)
-            .Include(p => p.Reviews)
             .OrderByDescending(p => p.CreatedAt)
             .Select(p => MapToDto(p))
             .ToListAsync();
@@ -224,8 +234,7 @@ public class PropertiesController : ControllerBase
         AreaSqFt = p.AreaSqFt,
         CreatedAt = p.CreatedAt,
         ImageUrls = p.Images?.Select(i => i.ImageUrl).ToList() ?? new(),
-        AverageRating = p.Reviews?.Any() == true ? p.Reviews.Average(r => r.Rating) : 0,
-        ReviewCount = p.Reviews?.Count ?? 0
+
     };
 
 

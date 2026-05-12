@@ -12,11 +12,10 @@ using Microsoft.OpenApi;
 
 using RentVibe.Data;
 
-using RentVibe.Hubs;
 
 using RentVibe.Models;
 
-using RentVibe.Services;
+
 
 
 
@@ -77,8 +76,8 @@ builder.Services.AddSwaggerGen(c =>
 // Entity Framework Core + SQL Server
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
 
 
@@ -198,9 +197,7 @@ builder.Services.AddSignalR();
 
 
 
-// Notification service
 
-builder.Services.AddScoped<NotificationService>();
 
 
 
@@ -276,27 +273,20 @@ app.UseStaticFiles(new StaticFileOptions
 
 
 
-// 1. الغي الـ HTTPS Redirection تماماً عشان الدوكر
-// app.UseHttpsRedirection(); 
-
 
 app.UseRouting();
 
-// 2. تفعيل الـ CORS بالسياسة اللي عرفناها فوق
-// تأكدي إنك منادية على نفس الاسم "AllowFrontend"
 app.UseCors("AllowFrontend"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 3. تأكدي إن المابنج للمتحكمات موجود
+
 app.MapControllers();
 
-// 4. السطر ده مهم لو بتستخدمي SignalR
-app.MapHub<NotificationHub>("/hubs/notifications");
+
 
 app.MapFallbackToFile("index.html");
-
 
 
 using (var scope = app.Services.CreateScope())
@@ -304,21 +294,14 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<AppDbContext>();
-        
-        // دي الخطوة السحرية: بتكريت الداتابيز كملف لو مش موجودة
-        context.Database.EnsureCreated(); 
-        
-        if (context.Database.GetPendingMigrations().Any())
-        {
-            context.Database.Migrate();
-        }
-        Console.WriteLine("Database is ready!");
+        var context = services.GetRequiredService<RentVibe.Data.AppDbContext>();
+        // السطر ده هو السحر: بيكاريه الداتابيز لو مش موجودة وبيعمل Apply للـ Migrations
+        context.Database.Migrate(); 
+        Console.WriteLine("Database check/migration completed successfully!");
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating or seeding the DB.");
+        Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
     }
 }
 

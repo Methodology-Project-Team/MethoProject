@@ -16,9 +16,5 @@ public class ApplicationUser : IdentityUser
 
     
     public ICollection<Property> Properties { get; set; } = new List<Property>();
-    public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
-    public ICollection<VisitAppointment> VisitAppointments { get; set; } = new List<VisitAppointment>();
-    public ICollection<RentalApplication> RentalApplications { get; set; } = new List<RentalApplication>();
-    public ICollection<Review> Reviews { get; set; } = new List<Review>();
-    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
 }

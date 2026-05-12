@@ -76,17 +76,3 @@ public class CreateVisitDto
     [MaxLength(500)] public string? Message { get; set; }
 }
 
-// ---- RentalApplication DTOs ----
-public class CreateApplicationDto
-{
-    [Required] public int PropertyId { get; set; }
-    [MaxLength(2000)] public string? Message { get; set; }
-}
-
-// ---- Review DTOs ----
-public class CreateReviewDto
-{
-    [Required] public int PropertyId { get; set; }
-    [Required] [Range(1, 5)] public int Rating { get; set; }
-    [MaxLength(2000)] public string? Comment { get; set; }
-}

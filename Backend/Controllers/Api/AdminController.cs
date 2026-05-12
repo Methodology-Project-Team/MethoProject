@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using RentVibe.Data;
 using RentVibe.Models;
 using RentVibe.Models.Enums;
-using RentVibe.Services;
+
 
 namespace RentVibe.Controllers.Api;
 
@@ -16,13 +16,13 @@ public class AdminController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly NotificationService _notifications;
 
-    public AdminController(AppDbContext db, UserManager<ApplicationUser> userManager, NotificationService notifications)
+
+    public AdminController(AppDbContext db, UserManager<ApplicationUser> userManager)
     {
         _db = db;
         _userManager = userManager;
-        _notifications = notifications;
+        
     }
 
     // --- Landlord account management ---
@@ -47,9 +47,7 @@ public class AdminController : ControllerBase
         user.AccountStatus = AccountStatus.Approved;
         await _userManager.UpdateAsync(user);
 
-        await _notifications.SendAsync(user.Id,
-            "Your landlord account has been approved! You can now list properties.",
-            NotificationType.AccountApproved);
+
 
         return Ok(new { message = "Landlord approved." });
     }
@@ -63,10 +61,6 @@ public class AdminController : ControllerBase
 
         user.AccountStatus = AccountStatus.Rejected;
         await _userManager.UpdateAsync(user);
-
-        await _notifications.SendAsync(user.Id,
-            "Your landlord account has been rejected.",
-            NotificationType.AccountRejected);
 
         return Ok(new { message = "Landlord rejected." });
     }
@@ -101,10 +95,6 @@ public class AdminController : ControllerBase
         property.ApprovalStatus = ApprovalStatus.Approved;
         await _db.SaveChangesAsync();
 
-        await _notifications.SendAsync(property.LandlordId,
-            $"Your property \"{property.Title}\" has been approved and is now visible.",
-            NotificationType.PropertyApproved, property.Id);
-
         return Ok(new { message = "Property approved." });
     }
 
@@ -117,9 +107,6 @@ public class AdminController : ControllerBase
         property.ApprovalStatus = ApprovalStatus.Rejected;
         await _db.SaveChangesAsync();
 
-        await _notifications.SendAsync(property.LandlordId,
-            $"Your property \"{property.Title}\" has been rejected.",
-            NotificationType.PropertyRejected, property.Id);
 
         return Ok(new { message = "Property rejected." });
     }
