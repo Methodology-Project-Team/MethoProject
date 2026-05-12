@@ -1,1 +1,1 @@
-create conflict point5
+create conflict-1 point5
